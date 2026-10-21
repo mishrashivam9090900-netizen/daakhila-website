@@ -1,0 +1,69 @@
+const WINDOW_MS = 60 * 1000;
+const MAX_REQUESTS_PER_WINDOW = 5;
+const requests = new Map();
+
+function json(res, status, payload) {
+  res.statusCode = status;
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.end(JSON.stringify(payload));
+}
+
+function clean(value, max = 200) {
+  return typeof value === 'string' ? value.trim().slice(0, max) : '';
+}
+
+function normalizePhone(value) {
+  const digits = clean(value, 30).replace(/\D/g, '');
+  if (digits.startsWith('91') && digits.length === 12) return digits.slice(2);
+  return digits;
+}
+
+function rateLimited(ip) {
+  const now = Date.now();
+  const recent = (requests.get(ip) || []).filter((time) => now - time < WINDOW_MS);
+  recent.push(now);
+  requests.set(ip, recent);
+  return recent.length > MAX_REQUESTS_PER_WINDOW;
+}
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
+
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
+  if (rateLimited(ip)) return json(res, 429, { error: 'Too many requests. Please try again in a minute.' });
+
+  let body;
+  try { body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {}; } catch { return json(res, 400, { error: 'Invalid request body.' }); }
+
+  if (clean(body.website, 100)) return json(res, 400, { error: 'Invalid submission.' });
+
+  const lead = {
+    name: clean(body.name, 80),
+    classYear: clean(body.classYear, 50),
+    exam: clean(body.exam, 30),
+    state: clean(body.state, 80),
+    phone: normalizePhone(body.phone),
+    consent: body.consent === true,
+  };
+  const validExams = new Set(['JEE', 'NEET', 'BA', 'BSc', 'BCom']);
+  if (!lead.name || !lead.classYear || !validExams.has(lead.exam) || !lead.state || !/^\d{10}$/.test(lead.phone) || !lead.consent) {
+    return json(res, 400, { error: 'Please provide valid details and accept the consent notice.' });
+  }
+
+  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
+  const notificationEmail = process.env.CONTACT_NOTIFICATION_EMAIL;
+  if (!webhookUrl || !notificationEmail) return json(res, 503, { error: 'Contact service is not configured yet.' });
+
+  try {
+    const upstream = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...lead, notificationEmail, source: 'daakhila-website', submittedAt: new Date().toISOString() }),
+    });
+    if (!upstream.ok) throw new Error(`Webhook returned ${upstream.status}`);
+    return json(res, 200, { ok: true });
+  } catch (error) {
+    console.error('Contact webhook failed', error);
+    return json(res, 502, { error: 'We could not send your enquiry. Please use WhatsApp or email instead.' });
+  }
+}
