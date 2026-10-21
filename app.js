@@ -26,6 +26,12 @@ function markUnreadyResources() {
   $('#cutoff-result').textContent = 'Coming soon. Verified cutoff data will be added after review.';
   $('.plans-section .section-row > p').textContent = 'Choose the right support for your stage. Contact us for pricing on paid guidance.';
 }
+function addVerificationNotes() {
+  $$('.info-card p').forEach((copy) => copy.insertAdjacentHTML('afterend', '<small class="verification-note">Verify with the official brochure for the current counselling year.</small>'));
+  $$('.course-card').forEach((card) => card.insertAdjacentHTML('beforeend', '<small class="verification-note">Verify with the official brochure for the current counselling year.</small>'));
+  $$('.state-card').forEach((card) => card.insertAdjacentHTML('beforeend', '<small class="verification-note">Verify with the official brochure for the current counselling year.</small>'));
+  $('.checklist-card .small-note').textContent = 'Verify with the official brochure for the current counselling year. Certificate format and validity dates matter.';
+}
 
 const checker = { homeState: '', target: '', category: '', exam: '' };
 function showCheckerQuestion() {
@@ -53,7 +59,7 @@ function showCheckerResult() {
 
 function updateEmi() { const amount = Number($('#amount').value) || 0, rate = Number($('#rate').value) / 1200 || 0, months = Number($('#years').value) * 12 || 0; const emi = months > 0 ? (rate ? amount * rate * (1 + rate) ** months / ((1 + rate) ** months - 1) : amount / months) : 0; $('#amount-output').textContent = `₹${amount.toLocaleString('en-IN')}`; $('#rate-output').textContent = `${Number($('#rate').value) || 0}%`; $('#years-output').textContent = `${Number($('#years').value) || 0} years`; $('#emi').textContent = `₹${Number.isFinite(emi) ? Math.round(emi).toLocaleString('en-IN') : '0'}`; }
 
-renderStates(); renderCourses(); renderPlans(); renderServices(); renderFaqs(); markUnreadyResources(); showCheckerQuestion(); updateEmi();
+renderStates(); renderCourses(); renderPlans(); renderServices(); renderFaqs(); markUnreadyResources(); addVerificationNotes(); showCheckerQuestion(); updateEmi();
 $$('.tab').forEach((tab) => tab.addEventListener('click', () => { $$('.tab').forEach((item) => item.classList.remove('active')); tab.classList.add('active'); renderStates(tab.dataset.filter, $('#state-search').value); }));
 $('#state-search').addEventListener('input', (event) => renderStates($('.tab.active').dataset.filter, event.target.value));
 $('.restart').addEventListener('click', () => { Object.keys(checker).forEach((key) => { checker[key] = ''; }); $('.checker-step').hidden = false; $('.checker-result').hidden = true; showCheckerQuestion(); });
