@@ -4,8 +4,8 @@ export const siteConfig = {
   whatsapp: '+916398851246',
   whatsappLink: 'https://wa.me/916398851246',
   email: 'daakhila.sathi@gmail.com',
-  formDestination: 'TODO — connect submitLead() before launch',
-  coursePrices: { delhi: 'TODO', package: 'TODO' },
+  formDestination: 'Configured by the Vercel API environment',
+  coursePrices: { delhi: 'Contact us for pricing', package: 'Contact us for pricing' },
   hindiAtLaunch: false,
 };
 
@@ -15,19 +15,19 @@ export const states = [
   { name: 'Haryana', code: 'HR', counselling: 'Haryana counselling', status: 'soon', exam: 'JEE', seats: 'State counselling', note: 'Course in preparation.' },
   { name: 'Maharashtra', code: 'MH', counselling: 'CAP', status: 'soon', exam: 'JEE', seats: 'State counselling', note: 'Course in preparation.' },
   { name: 'NIT / IIIT', code: 'NIT', counselling: 'JoSAA', status: 'soon', exam: 'JEE', seats: 'Home-state inside national process', note: 'Course in preparation.' },
-  { name: 'Other states', code: '↗', counselling: 'On request', status: 'request', exam: 'JEE · NEET · UG', seats: 'Ask about your route', note: 'Tell us what you need.' },
+  { name: 'Other states', code: 'REQ', counselling: 'On request', status: 'request', exam: 'JEE / NEET / UG', seats: 'Ask about your route', note: 'Tell us what you need.' },
 ];
 
 export const courses = [
-  { title: 'Delhi quota course', status: 'Live', accent: 'yellow', meta: 'JEE · JAC Delhi', modules: ['Quota rules', 'Documents', 'Cutoffs', 'Choice filling', 'Timeline', 'Backups'] },
-  { title: 'UPTAC quota course', status: 'Coming soon', accent: 'paper', meta: 'JEE · Uttar Pradesh', modules: ['Quota rules', 'Documents', 'Cutoffs', 'Choice filling'] },
-  { title: 'NIT home-state guide', status: 'Coming soon', accent: 'blue', meta: 'JEE · JoSAA / CSAB', modules: ['Home-state seats', 'Choice filling', 'Rounds', 'Backups'] },
+  { title: 'Delhi quota course', status: 'Live', accent: 'yellow', meta: 'JEE / JAC Delhi', modules: ['Quota rules', 'Documents', 'Cutoffs', 'Choice filling', 'Timeline', 'Backups'] },
+  { title: 'UPTAC quota course', status: 'Coming soon', accent: 'paper', meta: 'JEE / Uttar Pradesh', modules: ['Quota rules', 'Documents', 'Cutoffs', 'Choice filling'] },
+  { title: 'NIT home-state guide', status: 'Coming soon', accent: 'blue', meta: 'JEE / JoSAA / CSAB', modules: ['Home-state seats', 'Choice filling', 'Rounds', 'Backups'] },
 ];
 
 export const plans = [
   { name: 'Free starter', label: 'START HERE', accent: 'paper', price: 'Free', copy: 'Understand the route before you commit.', features: ['Quota explainer', 'Starter document checklist', 'Selected notes and PYQs'], action: 'Explore resources' },
-  { name: 'Quota course', label: 'SELF-PACED SUPPORT', accent: 'yellow', price: 'Price to be confirmed', copy: 'A written guide and mentor-led structure for one state or exam route.', features: ['Quota rules and documents', 'Cutoff reading and choice filling', 'Timeline and backup plans'], action: 'Ask about the course' },
-  { name: 'Complete package', label: 'PERSONALISED SUPPORT', accent: 'navy', price: 'Price to be confirmed', copy: 'Guidance across documents, choices and rounds for your admission journey.', features: ['One-to-one counselling', 'Document verification', 'Follow-up through rounds'], action: 'Talk about a package' },
+  { name: 'Quota course', label: 'SELF-PACED SUPPORT', accent: 'yellow', price: 'Contact us for pricing', copy: 'A written guide and mentor-led structure for one state or exam route.', features: ['Quota rules and documents', 'Cutoff reading and choice filling', 'Timeline and backup plans'], action: 'Ask about the course' },
+  { name: 'Complete package', label: 'PERSONALISED SUPPORT', accent: 'navy', price: 'Contact us for pricing', copy: 'Guidance across documents, choices and rounds for your admission journey.', features: ['One-to-one counselling', 'Document verification', 'Follow-up through rounds'], action: 'Talk about a package' },
 ];
 
 export const faqs = [
