@@ -23,6 +23,16 @@ Copy `.env.example` to `.env` for local configuration. Set these variables in Ve
 
 Never commit `.env`.
 
+### Create the Google Sheet webhook
+
+1. Create a Google Sheet and add an Apps Script project from Extensions &rarr; Apps Script.
+2. Paste `google-apps-script/Code.gs` into the script editor. The script creates a `Leads` tab and header row automatically.
+3. Deploy &rarr; New deployment &rarr; Web app. Execute as yourself and allow access to anyone with the link.
+4. Copy the `/exec` URL into `GOOGLE_SHEETS_WEBHOOK_URL` in Vercel.
+5. Set `CONTACT_NOTIFICATION_EMAIL` to `daakhila.sathi@gmail.com`, redeploy, and submit a real test enquiry.
+
+The Apps Script sends the notification email and appends the lead to the Sheet. Review its permissions, retention and access settings before launch.
+
 ## Test the site
 
 - Open the page at desktop width and at a narrow phone width such as 360px.
@@ -37,7 +47,7 @@ Never commit `.env`.
 - `data/site-config.js`: brand configuration, states, courses and services.
 - `index.html`: copy, page structure and founder-supplied placeholders.
 - `styles.css`: design tokens, responsive layout and print styling.
-- `app.js`: interactive behavior and the `submitLead()` integration point.
+- `app.js`: interactive behavior and the `/api/contact` client integration.
 
 ## Add a state
 

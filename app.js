@@ -31,6 +31,7 @@ function addVerificationNotes() {
   $$('.course-card').forEach((card) => card.insertAdjacentHTML('beforeend', '<small class="verification-note">Verify with the official brochure for the current counselling year.</small>'));
   $$('.state-card').forEach((card) => card.insertAdjacentHTML('beforeend', '<small class="verification-note">Verify with the official brochure for the current counselling year.</small>'));
   $('.checklist-card .small-note').textContent = 'Verify with the official brochure for the current counselling year. Certificate format and validity dates matter.';
+  $('.lead-form .small-note').textContent = 'Your details are sent to the configured Daakhila contact sheet only after you submit. You can also contact us directly via WhatsApp or email.';
 }
 
 const checker = { homeState: '', target: '', category: '', exam: '' };
