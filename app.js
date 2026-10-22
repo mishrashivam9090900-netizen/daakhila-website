@@ -71,6 +71,7 @@ $('#predict-btn').addEventListener('click', () => { const rank = Number($('#rank
 $('#cutoff-select').addEventListener('change', (event) => { $('#cutoff-result').textContent = event.target.value === 'all' ? 'Coming soon. No verified cutoff data is published here yet.' : 'Coming soon. Current official cutoff data will be added after verification.'; }); $('#cutoff-select').dispatchEvent(new Event('change'));
 
 const leadForm = $('#lead-form');
+const INDIAN_MOBILE_REGEX = /^[6-9]\d{9}$/;
 leadForm.insertAdjacentHTML('afterbegin', '<input class="honeypot" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />');
 const consentLabel = $('.consent', leadForm);
 consentLabel.insertAdjacentHTML('beforeend', ' <span class="consent-links">Read our <a href="/privacy.html">privacy notice</a> and <a href="/terms.html">terms</a>.</span>');
@@ -90,12 +91,19 @@ function validateLeadForm() {
     ['class', !fields.classYear.value.trim(), 'Please enter your class or year.'],
     ['exam', !fields.exam.value, 'Please select your exam.'],
     ['state', !fields.state.value.trim(), 'Please enter your home state.'],
-    ['phone', !/^[6-9]\d{9}$/.test(normalizePhone(fields.phone.value)), 'Enter a valid 10-digit mobile number.'],
+    ['phone', !INDIAN_MOBILE_REGEX.test(normalizePhone(fields.phone.value)), 'Enter a valid 10-digit mobile number.'],
   ];
   errors.forEach(([fieldName, invalid, message]) => { if (invalid) { valid = false; const field = fieldName === 'class' ? fields.classYear : fields[fieldName]; field.setAttribute('aria-invalid', 'true'); $(`[data-error-for="${fieldName}"]`, leadForm).textContent = message; } });
   const consent = $('[name="consent"]', leadForm); if (!consent.checked) { valid = false; $('[data-error-for="consent"]', leadForm).textContent = 'Please tick the consent box.'; }
   return valid;
 }
+$$('input, select', leadForm).forEach((field) => ['input', 'change'].forEach((eventName) => field.addEventListener(eventName, () => {
+  const errorField = field.name === 'class' ? 'class' : field.name;
+  const error = $(`[data-error-for="${errorField}"]`, leadForm);
+  if (error) error.textContent = '';
+  field.removeAttribute('aria-invalid');
+  if (field.name === 'consent' && field.checked) $('[data-error-for="consent"]', leadForm).textContent = '';
+})));
 leadForm.addEventListener('submit', async (event) => {
   event.preventDefault(); $('#form-message').textContent = '';
   if (!validateLeadForm()) { $('#form-message').textContent = 'Please check the highlighted fields.'; return; }

@@ -1,5 +1,6 @@
 const WINDOW_MS = 60 * 1000;
 const MAX_REQUESTS_PER_WINDOW = 5;
+const INDIAN_MOBILE_REGEX = /^[6-9]\d{9}$/;
 const requests = new Map();
 
 function json(res, status, payload) {
@@ -52,7 +53,7 @@ export default async function handler(req, res) {
     ['classYear', !lead.classYear, 'Please enter your class or year.'],
     ['exam', !validExams.has(lead.exam), 'Please select your exam.'],
     ['state', !lead.state, 'Please enter your home state.'],
-    ['phone', !/^[6-9]\d{9}$/.test(lead.phone), 'Enter a valid 10-digit mobile number.'],
+    ['phone', !INDIAN_MOBILE_REGEX.test(lead.phone), 'Enter a valid 10-digit mobile number.'],
     ['consent', !lead.consent, 'Please tick the consent box.'],
   ];
   const firstError = validationErrors.find(([, invalid]) => invalid);
