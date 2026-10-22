@@ -18,6 +18,10 @@ export const states = [
   { name: 'Other states', code: 'REQ', counselling: 'On request', status: 'request', exam: 'JEE / NEET / UG', seats: 'Ask about your route', note: 'Tell us what you need.' },
 ];
 
+export const indianStates = [
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal', 'Andaman and Nicobar Islands', 'Chandigarh', 'Dadra and Nagar Haveli and Daman and Diu', 'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry',
+];
+
 export const courses = [
   { title: 'Delhi quota course', status: 'Live', accent: 'yellow', meta: 'JEE / JAC Delhi', modules: ['Quota rules', 'Documents', 'Cutoffs', 'Choice filling', 'Timeline', 'Backups'] },
   { title: 'UPTAC quota course', status: 'Coming soon', accent: 'paper', meta: 'JEE / Uttar Pradesh', modules: ['Quota rules', 'Documents', 'Cutoffs', 'Choice filling'] },

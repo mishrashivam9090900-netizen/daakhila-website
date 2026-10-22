@@ -45,7 +45,7 @@ export default async function handler(req, res) {
     exam: clean(body.exam, 30),
     state: clean(body.state, 80),
     phone: normalizePhone(body.phone),
-    consent: body.consent === true,
+    consent: body.consent === true || body.consent === 'true' || body.consent === 'on',
   };
   const validExams = new Set(['JEE', 'NEET', 'BA', 'BSc', 'BCom']);
   const validationErrors = [

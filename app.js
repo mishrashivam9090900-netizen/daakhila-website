@@ -1,4 +1,4 @@
-import { states, courses, plans, services, faqs } from './data/site-config.js';
+import { states, indianStates, courses, plans, services, faqs } from './data/site-config.js';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -72,6 +72,16 @@ $('#cutoff-select').addEventListener('change', (event) => { $('#cutoff-result').
 
 const leadForm = $('#lead-form');
 const INDIAN_MOBILE_REGEX = /^[6-9]\d{9}$/;
+const stateInput = $('[name="state"]', leadForm);
+const stateSelect = document.createElement('select');
+stateSelect.name = 'state'; stateSelect.id = 'state'; stateSelect.required = true; stateSelect.setAttribute('aria-label', 'Home state');
+stateSelect.innerHTML = '<option value="">Select your state or union territory</option>' + indianStates.map((state) => `<option value="${state}">${state}</option>`).join('');
+stateInput.replaceWith(stateSelect);
+const phoneInput = $('[name="phone"]', leadForm);
+const phoneWrapper = document.createElement('span'); phoneWrapper.className = 'phone-input';
+phoneWrapper.innerHTML = '<span class="phone-prefix" aria-hidden="true">+91</span>';
+phoneWrapper.append(phoneInput); phoneInput.placeholder = '98765 43210';
+const phoneLabel = phoneInput.closest('label'); const phoneError = $('[data-error-for="phone"]', phoneLabel); phoneInput.remove(); phoneWrapper.append(phoneInput); if (phoneError) phoneLabel.insertBefore(phoneWrapper, phoneError); else phoneLabel.append(phoneWrapper);
 leadForm.insertAdjacentHTML('afterbegin', '<input class="honeypot" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />');
 const consentLabel = $('.consent', leadForm);
 consentLabel.insertAdjacentHTML('beforeend', ' <span class="consent-links">Read our <a href="/privacy.html">privacy notice</a> and <a href="/terms.html">terms</a>.</span>');
