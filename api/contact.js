@@ -13,8 +13,9 @@ function clean(value, max = 200) {
 }
 
 function normalizePhone(value) {
-  const digits = clean(value, 30).replace(/\D/g, '');
-  if (digits.startsWith('91') && digits.length === 12) return digits.slice(2);
+  let digits = clean(value, 30).replace(/\D/g, '');
+  if (digits.startsWith('91') && digits.length === 12) digits = digits.slice(2);
+  else if (digits.startsWith('0') && digits.length === 11) digits = digits.slice(1);
   return digits;
 }
 
@@ -46,9 +47,16 @@ export default async function handler(req, res) {
     consent: body.consent === true,
   };
   const validExams = new Set(['JEE', 'NEET', 'BA', 'BSc', 'BCom']);
-  if (!lead.name || !lead.classYear || !validExams.has(lead.exam) || !lead.state || !/^\d{10}$/.test(lead.phone) || !lead.consent) {
-    return json(res, 400, { error: 'Please provide valid details and accept the consent notice.' });
-  }
+  const validationErrors = [
+    ['name', lead.name.length < 2, 'Please enter your name.'],
+    ['classYear', !lead.classYear, 'Please enter your class or year.'],
+    ['exam', !validExams.has(lead.exam), 'Please select your exam.'],
+    ['state', !lead.state, 'Please enter your home state.'],
+    ['phone', !/^[6-9]\d{9}$/.test(lead.phone), 'Enter a valid 10-digit mobile number.'],
+    ['consent', !lead.consent, 'Please tick the consent box.'],
+  ];
+  const firstError = validationErrors.find(([, invalid]) => invalid);
+  if (firstError) return json(res, 400, { field: firstError[0], error: firstError[2] });
 
   const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
   const notificationEmail = process.env.CONTACT_NOTIFICATION_EMAIL;

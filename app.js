@@ -76,14 +76,24 @@ const consentLabel = $('.consent', leadForm);
 consentLabel.insertAdjacentHTML('beforeend', ' <span class="consent-links">Read our <a href="/privacy.html">privacy notice</a> and <a href="/terms.html">terms</a>.</span>');
 $$('label', leadForm).forEach((label, index) => { const input = $('input, select', label); if (input && !input.id) { input.id = input.name || `lead-field-${index}`; const text = label.childNodes[0]; if (text && text.nodeType === Node.TEXT_NODE) label.dataset.fieldLabel = text.textContent.trim(); } });
 function clearFormErrors() { $$('.field-error', leadForm).forEach((error) => { error.textContent = ''; }); $$('input, select', leadForm).forEach((field) => field.removeAttribute('aria-invalid')); }
+function normalizePhone(value) {
+  let digits = String(value || '').replace(/\D/g, '');
+  if (digits.startsWith('91') && digits.length === 12) digits = digits.slice(2);
+  else if (digits.startsWith('0') && digits.length === 11) digits = digits.slice(1);
+  return digits;
+}
 function validateLeadForm() {
   clearFormErrors(); let valid = true;
-  leadForm.querySelectorAll('input, select').forEach((field) => {
-    if (field.name === 'consent' || field.name === 'website') return;
-    const phoneInvalid = field.name === 'phone' && !/^\+?91?\s?\d{10}$/.test(field.value.replace(/[()-]/g, '').replace(/\s+/g, ''));
-    if (!field.value.trim() || phoneInvalid) { valid = false; field.setAttribute('aria-invalid', 'true'); const error = $(`[data-error-for="${field.name}"]`, leadForm); if (error) error.textContent = field.name === 'phone' ? 'Enter a valid 10-digit Indian phone number.' : 'This field is required.'; }
-  });
-  const consent = $('[name="consent"]', leadForm); if (!consent.checked) { valid = false; $('[data-error-for="consent"]', leadForm).textContent = 'Please accept the privacy and terms notice.'; }
+  const fields = { name: $('[name="name"]', leadForm), classYear: $('[name="class"]', leadForm), exam: $('[name="exam"]', leadForm), state: $('[name="state"]', leadForm), phone: $('[name="phone"]', leadForm) };
+  const errors = [
+    ['name', fields.name.value.trim().length < 2, 'Please enter your name.'],
+    ['class', !fields.classYear.value.trim(), 'Please enter your class or year.'],
+    ['exam', !fields.exam.value, 'Please select your exam.'],
+    ['state', !fields.state.value.trim(), 'Please enter your home state.'],
+    ['phone', !/^[6-9]\d{9}$/.test(normalizePhone(fields.phone.value)), 'Enter a valid 10-digit mobile number.'],
+  ];
+  errors.forEach(([fieldName, invalid, message]) => { if (invalid) { valid = false; const field = fieldName === 'class' ? fields.classYear : fields[fieldName]; field.setAttribute('aria-invalid', 'true'); $(`[data-error-for="${fieldName}"]`, leadForm).textContent = message; } });
+  const consent = $('[name="consent"]', leadForm); if (!consent.checked) { valid = false; $('[data-error-for="consent"]', leadForm).textContent = 'Please tick the consent box.'; }
   return valid;
 }
 leadForm.addEventListener('submit', async (event) => {
@@ -91,11 +101,11 @@ leadForm.addEventListener('submit', async (event) => {
   if (!validateLeadForm()) { $('#form-message').textContent = 'Please check the highlighted fields.'; return; }
   const button = $('button[type="submit"]', leadForm); button.disabled = true; button.setAttribute('aria-busy', 'true'); button.dataset.label = button.textContent; button.textContent = 'Sending...';
   try {
-    const formData = new FormData(leadForm); const payload = Object.fromEntries(formData); payload.classYear = payload.class; delete payload.class; payload.consent = formData.get('consent') === 'on';
+    const formData = new FormData(leadForm); const payload = Object.fromEntries(formData); payload.classYear = payload.class; delete payload.class; payload.phone = normalizePhone(payload.phone); payload.consent = formData.get('consent') === 'on';
     const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-    const result = await response.json(); if (!response.ok) throw new Error(result.error || 'Unable to send.');
+    const result = await response.json(); if (!response.ok) { const apiError = new Error(result.error || 'Unable to send.'); apiError.field = result.field; throw apiError; }
     track('contact_form_submitted', { exam: payload.exam }); leadForm.reset(); $('#form-message').innerHTML = 'Thank you. We received your enquiry. You can also <a data-whatsapp-link href="https://wa.me/916398851246" target="_blank" rel="noreferrer">message us on WhatsApp</a>.';
-  } catch (error) { $('#form-message').textContent = error.message || 'We could not send your enquiry. Please use WhatsApp or email instead.'; }
+  } catch (error) { if (error.field) { const field = error.field === 'classYear' ? 'class' : error.field; const input = $(`[name="${field}"]`, leadForm); if (input) input.setAttribute('aria-invalid', 'true'); const fieldError = $(`[data-error-for="${field}"]`, leadForm); if (fieldError) fieldError.textContent = error.message; } $('#form-message').textContent = error.message || 'We could not send your enquiry. Please use WhatsApp or email instead.'; }
   finally { button.disabled = false; button.removeAttribute('aria-busy'); button.textContent = button.dataset.label; }
 });
 $$('[data-whatsapp-link], a[href*="wa.me"]').forEach((link) => link.addEventListener('click', () => track('whatsapp_click')));
