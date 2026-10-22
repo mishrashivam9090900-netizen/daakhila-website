@@ -79,9 +79,8 @@ stateSelect.innerHTML = '<option value="">Select your state or union territory</
 stateInput.replaceWith(stateSelect);
 const phoneInput = $('[name="phone"]', leadForm);
 const phoneWrapper = document.createElement('span'); phoneWrapper.className = 'phone-input';
-phoneWrapper.innerHTML = '<span class="phone-prefix" aria-hidden="true">+91</span>';
-phoneWrapper.append(phoneInput); phoneInput.placeholder = '98765 43210';
-const phoneLabel = phoneInput.closest('label'); const phoneError = $('[data-error-for="phone"]', phoneLabel); phoneInput.remove(); phoneWrapper.append(phoneInput); if (phoneError) phoneLabel.insertBefore(phoneWrapper, phoneError); else phoneLabel.append(phoneWrapper);
+const phonePrefix = document.createElement('span'); phonePrefix.className = 'phone-prefix'; phonePrefix.setAttribute('aria-hidden', 'true'); phonePrefix.textContent = '+91';
+phoneInput.placeholder = '98765 43210'; phoneInput.parentNode.insertBefore(phoneWrapper, phoneInput); phoneWrapper.append(phonePrefix, phoneInput);
 leadForm.insertAdjacentHTML('afterbegin', '<input class="honeypot" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />');
 const consentLabel = $('.consent', leadForm);
 consentLabel.insertAdjacentHTML('beforeend', ' <span class="consent-links">Read our <a href="/privacy.html">privacy notice</a> and <a href="/terms.html">terms</a>.</span>');
