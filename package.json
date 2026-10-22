@@ -2,6 +2,9 @@
   "name": "daakhila-website",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "check": "node --check app.js && node --check api/contact.js && node --check data/site-config.js",
     "build": "node scripts/validate.mjs",
